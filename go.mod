@@ -1,4 +1,4 @@
-module github.com/vlcty/coredns-auto-ipv6-ptr
+module github.com/sniff122/coredns-autodomainip
 
 go 1.18
 

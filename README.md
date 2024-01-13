@@ -1,6 +1,8 @@
-# coredns-auto-ipv6-ptr
+# coredns-autodomainip6
 
-Goal: Generate IPv6 PTR records on the fly.
+A fork of [vlcty/coredns-auto-ipv6-ptr](https://github.com/vlcty/coredns-auto-ipv6-ptr)
+
+Goal: Generate IPv6 AAAA records on the fly
 
 Additional benefit: Works with known hosts.
 
@@ -9,33 +11,39 @@ Additional benefit: Works with known hosts.
 ### Generate PTR records if not found in a zonefile
 
 ```
-0.0.0.b.0.0.3.0.8.b.d.0.1.0.0.2.ip6.arpa {
-    autoipv6ptr {
-        suffix lan.mydomain.tld
+rdns.example.com. {
+    autodomainip6 {
+        suffix rdns.example.com
+        ttl 60
+        allowed 2001:0db8:1234:1::/64 2001:0db8:1234:2::/64
     }
-    file your.reverse.zone
     log
+    errors
 }
+
 ```
 
 ### Same as above but with a transferred zone
+(Untested, not used in my setup - if used please report success/failure)
 
 ```
-1.0.0.b.0.0.3.0.8.b.d.0.1.0.0.2.ip6.arpa {
-    autoipv6ptr {
-        suffix servers.mydomain.tld
+rdns.example.com. {
+    autodomainip6 {
+        suffix rdns.example.com
         ttl 60
+        allowed 2001:0db8:1234:1::/64 2001:0db8:1234:2::/64
     }
     secondary {
         transfer from your.master.dns
     }
     log
+    errors
 }
 ```
 
 ## Order is everything!
 
-It's necessary that `file` or `seconary` comes right after `autoipv6ptr`! This plugin always calls the next plugin and checks its return. It will only generate a PTR if a negative result comes back.
+It's necessary that `file` or `secondary` comes right after `autodomainip6`! This plugin always calls the next plugin and checks its return. It will only generate an AAAA if a negative result comes back.
 
 ## Building a ready-to-use coredns binary using Docker
 
@@ -45,18 +53,8 @@ Using the docker infrastructure it's easy for you to build a working binary with
 
 If everything checks out you'll find an x86_64 binary locally under `result/coredns`.
 
-## Testing
 
-Run:
 
-> ./result/coredns -conf tests/Corefile -p 1337
+## Note
 
-Test with dig. Known record:
-
-> dig @::1 -p 1337 +short -x 2001:db8:300::10   
->success.example.com.
-
-Unknown record:
-
-> dig @::1 -p 1337 +short -x 2001:db8:300::11   
-> 20010db8030000000000000000000011.example.com.
+My Go skills are basically non-existent, first time dabbling into Go so expect best practices and stuff to not be followed, feel free to submit PRs!
