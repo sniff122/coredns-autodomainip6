@@ -17,6 +17,7 @@ rdns.example.com. {
         ttl 60
         allowed 2001:0db8:1234:1::/64 2001:0db8:1234:2::/64
     }
+    file /path/to/zone.file
     log
     errors
 }
