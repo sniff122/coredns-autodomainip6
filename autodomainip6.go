@@ -49,6 +49,7 @@ func (v6 AutoDomainIP6) ServeDNS(ctx context.Context, writer dns.ResponseWriter,
 		// Do not process the request further, return an empty response
 		message := new(dns.Msg)
 		message.SetReply(request)
+		message.Rcode = dns.RcodeRefused
 		writer.WriteMsg(message)
 		return dns.RcodeRefused, nil
 	}
